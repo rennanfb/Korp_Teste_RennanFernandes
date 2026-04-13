@@ -1,0 +1,21 @@
+<div class="center-container">
+
+<h2 class="base-text">New Product</h2>
+
+<div>
+  <input placeholder="Code" [(ngModel)]="product.code" />
+</div>
+
+<div>
+  <input placeholder="Description" [(ngModel)]="product.description" />
+</div>
+
+<div>
+  <input type="number" placeholder="Stock" [(ngModel)]="product.stock" />
+</div>
+
+<button class="btn-primary" (click)="save()">Save</button>
+
+<button class="btn-secondary" routerLink="/">Back to Home</button>
+
+</div>

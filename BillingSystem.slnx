@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Itens de Solução/">
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="InvoiceService/InvoiceService.csproj" />
+  <Project Path="Shared/Shared.csproj" Id="c1177323-b62c-41e4-b400-1af52f379ee7" />
+  <Project Path="StockService/StockService.csproj" Id="c2686ee9-c0e9-4bf4-a311-8d3c1ce0e55a" />
+</Solution>

@@ -1,0 +1,32 @@
+<div class="center-container">
+
+  <h2 class="base-text">New Invoice</h2>
+
+  <div class="create-invoice-panel">
+    <select [(ngModel)]="selectedProductId">
+      <option [ngValue]="null">Select a Product</option>
+
+      <option *ngFor="let p of products" [ngValue]="p.id">
+        {{ p.code }} - {{ p.description }}
+      </option>
+    </select>
+
+    <input type="number" [(ngModel)]="quantity" />
+
+    <button class="btn-primary" (click)="addItem()">Add</button>
+
+    <button class="btn-primary" (click)="save()">
+      Create Invoice
+    </button>
+
+  </div>
+
+  <div class="product-list">
+    <div *ngFor="let i of items" class="product-item">
+      Product ID: {{ i.productId }} | Qtd: {{ i.quantity }}
+    </div>
+  </div>
+
+    <button class="btn-secondary" routerLink="/">Back to Home</button>
+
+</div>

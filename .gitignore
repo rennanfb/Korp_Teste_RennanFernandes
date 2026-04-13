@@ -1,0 +1,32 @@
+# =========================
+# ASP.NET Core (.NET)
+# =========================
+.vs/
+bin/
+obj/
+Debug/
+Release/
+x64/
+x86/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.log
+publish/
+wwwroot/
+secrets.json
+*.nupkg
+packages/
+.nuget/
+node_modules/
+dist/
+.angular/
+coverage/
+.cache/
+.env
+.env.*
+.vscode/
+*.code-workspace
+.DS_Store
+Thumbs.db

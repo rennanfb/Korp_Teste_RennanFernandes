@@ -1,0 +1,18 @@
+<div class="center-container">
+  <div class="page-container">
+    <div class="left-panel">
+      <h2 class="base-text">Products</h2>
+      
+      <div class="product-list">
+        <div *ngFor="let p of products" class="product-item">
+          {{ p.code }} - {{ p.description }} ({{ p.stock }})
+        </div>
+      </div>
+    </div>
+    <div class="right-panel">
+      <button class="btn-primary" routerLink="/products/new">New Product</button>
+      
+      <button class="btn-secondary" routerLink="/">Back to Home</button>
+    </div>
+  </div>
+</div>

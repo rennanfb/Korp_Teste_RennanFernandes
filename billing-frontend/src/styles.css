@@ -1,0 +1,126 @@
+/* You can add global styles to this file, and also import other style files */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #171718;
+}
+
+.base-text {
+  color: #fff;
+}
+
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #30a757;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  width: 200px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:hover {
+  background-color: #2f7a47;
+}
+
+.btn-primary:disabled {
+  background-color: #14251a;
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #24beb2;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  width: 200px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:hover {
+  background-color: #3b948c;
+}
+
+.btn-secondary:disabled {
+  background-color: #142422;
+}
+
+.invoice-item {
+ display: flex;
+  justify-content: center; 
+  align-items: center;      
+  padding: 10px;
+  border: 2px solid #1e1e1f;
+  border-radius: 6px;
+  background-color: #3b3b3b;
+  color: #fff;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: auto;
+}
+
+.product-item {
+  display: flex;
+  justify-content: center;  
+  align-items: center;    
+  padding: 10px;
+  border: 2px solid #1e1e1f;
+  border-radius: 6px;
+  background-color: #3b3b3b;
+  color: #fff;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.page-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 250px;
+  padding: 20px;
+}
+
+.left-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.right-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.create-invoice-panel {
+    display: flex;
+    gap: 15px;
+}

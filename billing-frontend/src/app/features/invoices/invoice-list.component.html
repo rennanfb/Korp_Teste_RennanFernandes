@@ -1,0 +1,21 @@
+<div class="center-container">
+  <div class="page-container">
+    <div class="left-panel">
+      <h2 class="base-text">Invoices</h2>
+      <div class="product-list">
+        <div *ngFor="let i of invoices" class="invoice-item">
+          Nº {{ i.number }} - {{ i.status }}
+        
+          <button class="btn-primary" (click)="print(i.id!)" [disabled]="i.status !== 'Open'">
+            Imprimir
+          </button>
+
+        </div>
+      </div>
+    </div>
+    <div class="right-panel">
+      <button class="btn-primary" routerLink="/invoices/new">New Invoice</button>
+
+      <button class="btn-secondary" routerLink="/">Back to Home</button>
+    </div>
+</div>
