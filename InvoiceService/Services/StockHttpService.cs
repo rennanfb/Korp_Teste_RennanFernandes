@@ -1,5 +1,6 @@
 ﻿using BillingSystem.Shared.Interfaces;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 public class StockHttpService : IStockHttpService
 {
@@ -62,6 +63,24 @@ public class StockHttpService : IStockHttpService
         {
             throw;
         }
+    }
+
+    public async Task<ProductSummaryDto?> GetProductById(int productId)
+    {
+        var response = await _http.GetAsync($"api/products/{productId}");
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        var json = await response.Content.ReadAsStringAsync();
+
+        var product = JsonSerializer.Deserialize<ProductSummaryDto>(json,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+        return product;
     }
 
 }

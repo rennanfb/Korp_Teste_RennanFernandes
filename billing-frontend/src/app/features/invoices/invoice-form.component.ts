@@ -51,11 +51,13 @@ export class InvoiceFormComponent implements OnInit {
     return;
   }
 
-  this.items.push({
-    productId: this.selectedProductId,
-    quantity: this.quantity
-  });
+  const product = this.products.find(p => p.id === this.selectedProductId);
 
+  this.items.push({
+  productId: this.selectedProductId,
+  quantity: this.quantity,
+  description: product?.description
+});
   this.selectedProductId = null;
   this.quantity = 1;
 

@@ -8,6 +8,8 @@ public class InvoiceItem
     [Required]
     public int Id { get; set; }
 
+    public string ProductDescription { get; set; } = string.Empty;
+
     [Required]
     public int ProductId { get; set; }
 

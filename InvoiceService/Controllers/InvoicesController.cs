@@ -37,29 +37,28 @@ public class InvoicesController : ControllerBase
     
         foreach (var itemDto in createInvoiceDto.Items)
         {
-            bool productExists;
-    
+            ProductSummaryDto? product;
+
             try
             {
-                productExists = await _stockHttpService.ProductExists(itemDto.ProductId);
+                product = await _stockHttpService.GetProductById(itemDto.ProductId);
             }
             catch (HttpRequestException)
             {
-    
                 return StatusCode(503, "Stock service unavailable");
             }
             catch (Exception)
             {
-    
                 return StatusCode(503, "Error communicating with stock service");
             }
-    
-            if (!productExists)
+
+            if (product == null)
                 return BadRequest($"Product {itemDto.ProductId} not found");
-    
+
             invoice.Items.Add(new InvoiceItem
             {
                 ProductId = itemDto.ProductId,
+                ProductDescription = product.Description,
                 Quantity = itemDto.Quantity
             });
         }
@@ -149,6 +148,7 @@ public class InvoicesController : ControllerBase
         return Ok(result);
     }
 
+
     //Concurrency Test
 
     [HttpGet("test-concurrency/{id}")]
@@ -166,4 +166,5 @@ public class InvoicesController : ControllerBase
 
         return Ok(results);
     }
+
 }

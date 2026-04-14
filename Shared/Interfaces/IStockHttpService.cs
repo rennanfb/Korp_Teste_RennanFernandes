@@ -10,4 +10,6 @@ public interface IStockHttpService
     Task<int?> GetStock(int productId);
     Task<bool> DecreaseStock(int productId, int quantity);
     Task<bool> HasStock(int productId, int quantity);
+    Task<ProductSummaryDto?> GetProductById(int productId);
+
 }
