@@ -7,7 +7,7 @@
       <option [ngValue]="null">Select a Product</option>
 
       <option *ngFor="let p of products" [ngValue]="p.id">
-        {{ p.code }} - {{ p.description }}
+        {{ p.code }} - {{ p.description }} - Stock: {{p.stock}}
       </option>
     </select>
 

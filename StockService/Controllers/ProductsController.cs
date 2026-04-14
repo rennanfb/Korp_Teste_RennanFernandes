@@ -74,7 +74,11 @@ public class ProductsController : ControllerBase
 
         var productResponse = _mapper.Map<ProductResponseDto>(product);
 
-        return Ok(productResponse);
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = product.Id },
+            productResponse
+        );
     }
 
     [HttpPost("{id}/decrease")]

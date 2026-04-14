@@ -81,7 +81,11 @@ public class InvoicesController : ControllerBase
 
         var invoiceResponse = _mapper.Map<InvoiceResponseDto>(invoice);
 
-        return Ok(invoiceResponse);
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = invoice.Id },
+            invoiceResponse
+        );
     }
 
     [HttpPost("{id}/print")]
