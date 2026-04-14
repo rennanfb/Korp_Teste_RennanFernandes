@@ -16,6 +16,8 @@ import { Router } from '@angular/router';
 })
 export class InvoiceFormComponent implements OnInit {
 
+  isLoading = false;
+
   products: Product[] = [];
 
   items: InvoiceItem[] = [];
@@ -65,21 +67,30 @@ export class InvoiceFormComponent implements OnInit {
 }
 
   save() {
-    const invoice = {
-  items: this.items
-};
-
-    this.invoiceService.create(invoice).subscribe({
-  next: (res) => {
-    alert(`Invoice ${res.number} created!`);
-
-    this.router.navigate(['/invoices']);
-
-    this.items = [];
-  },
-  error: (err) => {
-  alert(err.error || 'Failed to create invoice');
-}
-});
+  if (this.items.length === 0) {
+    alert('Add at least one item');
+    return;
   }
+
+  this.isLoading = true;
+
+  const invoice = {
+    items: this.items
+  };
+
+  this.invoiceService.create(invoice).subscribe({
+    next: (res) => {
+      alert(`Invoice ${res.number} created!`);
+      this.items = [];
+      this.router.navigate(['/invoices']);
+    },
+    error: (err) => {
+      alert(err.error || 'Failed to create invoice');
+      this.isLoading = false;
+    },
+    complete: () => {
+      this.isLoading = false;
+    }
+  });
+}
 }

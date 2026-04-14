@@ -13,6 +13,8 @@ import { ChangeDetectorRef } from '@angular/core';
 })
 export class InvoiceListComponent implements OnInit {
 
+  loadingInvoiceId: number | null = null;
+
   invoices: Invoice[] = [];
 
   constructor(
@@ -35,14 +37,20 @@ export class InvoiceListComponent implements OnInit {
 }
 
   print(id: number) {
+  this.loadingInvoiceId = id;
+
   this.invoiceService.print(id).subscribe({
     next: () => {
       alert('Invoice printed and finalized');
       this.load();
     },
     error: (err) => {
-  alert(err.error || 'Failed to print invoice');
-}
+      alert(err.error || 'Failed to print invoice');
+      this.loadingInvoiceId = null;
+    },
+    complete: () => {
+      this.loadingInvoiceId = null;
+    }
   });
 }
 }

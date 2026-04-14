@@ -3,6 +3,7 @@ using BillingSystem.InvoiceService.Data;
 using BillingSystem.InvoiceService.Dto;
 using BillingSystem.InvoiceService.Models;
 using BillingSystem.Shared.Interfaces;
+using InvoiceService.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,13 +29,13 @@ public class InvoicesController : ControllerBase
     {
         if (createInvoiceDto.Items == null || !createInvoiceDto.Items.Any())
             return BadRequest("Invoice must have at least one item");
-    
+
         var invoice = new Invoice
         {
             Status = InvoiceStatus.Open,
             Items = new List<InvoiceItem>()
         };
-    
+
         foreach (var itemDto in createInvoiceDto.Items)
         {
             ProductSummaryDto? product;
@@ -62,24 +63,24 @@ public class InvoicesController : ControllerBase
                 Quantity = itemDto.Quantity
             });
         }
-    
+
         _context.Invoices.Add(invoice);
-    
+
         try
         {
             await _context.SaveChangesAsync();
-    
+
             invoice.Number = $"INV-{DateTime.UtcNow.Year}-{invoice.Id:D4}";
-    
+
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
             return BadRequest(ex.InnerException?.Message ?? ex.Message);
         }
-    
+
         var invoiceResponse = _mapper.Map<InvoiceResponseDto>(invoice);
-    
+
         return Ok(invoiceResponse);
     }
 
@@ -146,6 +147,36 @@ public class InvoicesController : ControllerBase
         var result = _mapper.Map<InvoiceResponseDto>(invoice);
 
         return Ok(result);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateById(int id, UpdateInvoiceDto dto)
+    {
+        var invoice = await _context.Invoices.FindAsync(id);
+
+        if (invoice == null)
+            return NotFound("Invoice not found");
+
+        _mapper.Map(dto, invoice);
+
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteById(int id)
+    {
+        var invoice = await _context.Invoices
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+        if (invoice == null)
+            return NotFound();
+
+        if (invoice.Status == InvoiceStatus.Closed) return BadRequest("Cannot delete a closed invoice");
+
+        _context.Remove(invoice);
+        await _context.SaveChangesAsync();
+        return NoContent();
     }
 
 

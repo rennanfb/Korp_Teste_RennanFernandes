@@ -102,7 +102,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto dto)
+    public async Task<IActionResult> UpdateById(int id, UpdateProductDto dto)
     {
         var product = await _context.Products.FindAsync(id);
 
@@ -112,10 +112,21 @@ public class ProductsController : ControllerBase
         _mapper.Map(dto, product);
 
         await _context.SaveChangesAsync();
+        return NoContent();
+    }
 
-        var productResponse = _mapper.Map<ProductResponseDto>(product);
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteById(int id)
+    {
+        var product = await _context.Products
+            .FirstOrDefaultAsync(i => i.Id == id);
 
-        return Ok(productResponse);
+        if (product == null)
+            return NotFound();
+
+        _context.Remove(product);
+        await _context.SaveChangesAsync();
+        return NoContent();
     }
 
 }

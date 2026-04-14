@@ -6,9 +6,18 @@
         <div *ngFor="let i of invoices" class="invoice-item">
           Nº {{ i.number }} - {{ i.status }}
         
-          <button class="btn-primary" (click)="print(i.id!)" [disabled]="i.status !== 'Open'">
-            Imprimir
-          </button>
+          <button 
+  class="btn-primary" 
+  (click)="print(i.id!)"
+  [disabled]="i.status !== 'Open' || loadingInvoiceId === i.id">
+
+  <span class="btn-text" [class.hidden]="loadingInvoiceId === i.id">
+    Imprimir
+  </span>
+
+  <div *ngIf="loadingInvoiceId === i.id" class="loader small spinner-overlay"></div>
+
+</button>
 
         </div>
       </div>

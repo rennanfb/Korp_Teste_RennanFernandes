@@ -13,11 +13,16 @@
 
     <input type="number" [(ngModel)]="quantity" />
 
-    <button class="btn-primary" (click)="addItem()">Add</button>
-
-    <button class="btn-primary" (click)="save()">
-      Create Invoice
+    <button class="btn-primary" (click)="addItem()" [disabled]="isLoading">
+      Add
     </button>
+
+    <button class="btn-primary" (click)="save()" [disabled]="isLoading">
+  <span *ngIf="!isLoading">Create Invoice</span>
+  <span *ngIf="isLoading">Creating...</span>
+</button>
+
+<div *ngIf="isLoading" class="loader"></div>
 
   </div>
 
@@ -27,6 +32,10 @@
     </div>
   </div>
 
-    <button class="btn-secondary" routerLink="/">Back to Home</button>
+    <button class="btn-secondary" routerLink="/invoices">Back to Invoices List</button>
+
+    <div class="back-home-container">
+  <button class="btn-secondary" routerLink="/">Back to Home</button>
+</div>
 
 </div>

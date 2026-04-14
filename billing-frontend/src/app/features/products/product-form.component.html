@@ -14,8 +14,21 @@
   <input type="number" placeholder="Stock" [(ngModel)]="product.stock" />
 </div>
 
-<button class="btn-primary" (click)="save()">Save</button>
+<button class="btn-primary" (click)="save()" [disabled]="isLoading">
 
-<button class="btn-secondary" routerLink="/">Back to Home</button>
+  <span class="btn-text" [class.hidden]="isLoading">
+    Save
+  </span>
+
+  <div *ngIf="isLoading" class="loader small spinner-overlay"></div>
+
+</button>
+
+<button class="btn-secondary" routerLink="/products">Back To Product List</button>
+
+<div class="back-home-container">
+  <button class="btn-secondary" routerLink="/">Back to Home</button>
+</div>
+
 
 </div>
