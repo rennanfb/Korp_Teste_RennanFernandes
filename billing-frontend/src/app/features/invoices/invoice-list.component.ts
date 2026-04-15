@@ -47,6 +47,7 @@ export class InvoiceListComponent implements OnInit {
     error: (err) => {
       alert(err.error || 'Failed to print invoice');
       this.loadingInvoiceId = null;
+      this.cdr.detectChanges();
     },
     complete: () => {
       this.loadingInvoiceId = null;
