@@ -24,7 +24,51 @@ public class InvoicesController : ControllerBase
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Retrieves all invoices.
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(List<InvoiceResponseDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll()
+    {
+        var invoices = await _context.Invoices
+            .Include(i => i.Items)
+            .ToListAsync();
+
+        var result = _mapper.Map<List<InvoiceResponseDto>>(invoices);
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Retrieves an invoice by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the invoice to retrieve.</param>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(InvoiceResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var invoice = await _context.Invoices
+            .Include(i => i.Items)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+        if (invoice == null)
+            return NotFound();
+
+        var result = _mapper.Map<InvoiceResponseDto>(invoice);
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Creates a new invoice after validating items against stock service.
+    /// </summary>
+    /// <param name="createInvoiceDto">Invoice data including product items.</param>
     [HttpPost]
+    [ProducesResponseType(typeof(InvoiceResponseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> Create(CreateInvoiceDto createInvoiceDto)
     {
         if (createInvoiceDto.Items == null || !createInvoiceDto.Items.Any())
@@ -88,7 +132,14 @@ public class InvoicesController : ControllerBase
         );
     }
 
+    /// <summary>
+    /// Prints an invoice after validating stock availability and updating stock quantities.
+    /// </summary>
+    /// <param name="id">The ID of the invoice to be printed.</param>
     [HttpPost("{id}/print")]
+    [ProducesResponseType(typeof(InvoiceResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Print(int id)
     {
         var invoice = await _context.Invoices
@@ -126,34 +177,14 @@ public class InvoicesController : ControllerBase
         return Ok(invoiceResponse);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var invoices = await _context.Invoices
-            .Include(i => i.Items)
-            .ToListAsync();
-
-        var result = _mapper.Map<List<InvoiceResponseDto>>(invoices);
-
-        return Ok(result);
-    }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var invoice = await _context.Invoices
-            .Include(i => i.Items)
-            .FirstOrDefaultAsync(i => i.Id == id);
-
-        if (invoice == null)
-            return NotFound();
-
-        var result = _mapper.Map<InvoiceResponseDto>(invoice);
-
-        return Ok(result);
-    }
-
+    /// <summary>
+    /// Updates an invoice by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the invoice to update.</param>
+    /// <param name="dto">The updated invoice data.</param>
     [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateById(int id, UpdateInvoiceDto dto)
     {
         var invoice = await _context.Invoices.FindAsync(id);
@@ -167,7 +198,14 @@ public class InvoicesController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Deletes an invoice by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the invoice to delete.</param>
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteById(int id)
     {
         var invoice = await _context.Invoices
@@ -183,10 +221,12 @@ public class InvoicesController : ControllerBase
         return NoContent();
     }
 
-
-    //Concurrency Test
-
+    /// <summary>
+    /// Tests stock concurrency by attempting to decrease stock multiple times simultaneously.
+    /// </summary>
+    /// <param name="id">The product ID used for the concurrency test.</param>
     [HttpGet("test-concurrency/{id}")]
+    [ProducesResponseType(typeof(bool[]), StatusCodes.Status200OK)]
     public async Task<IActionResult> TestConcurrency(int id)
     {
 

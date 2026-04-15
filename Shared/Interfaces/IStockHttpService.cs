@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BillingSystem.Shared.Interfaces;
+﻿namespace BillingSystem.Shared.Interfaces;
 
 public interface IStockHttpService
 {

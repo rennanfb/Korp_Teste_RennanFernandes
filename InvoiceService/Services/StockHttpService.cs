@@ -1,5 +1,4 @@
 ﻿using BillingSystem.Shared.Interfaces;
-using System.Net.Http.Json;
 using System.Text.Json;
 
 public class StockHttpService : IStockHttpService

@@ -2,6 +2,8 @@ using BillingSystem.InvoiceService.Data;
 using BillingSystem.InvoiceService.Profiles;
 using BillingSystem.Shared.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +37,14 @@ builder.Services.AddDbContext<InvoiceDbContext>(opts => opts.UseSqlite(builder.C
 builder.Services.AddAutoMapper(cfg => { }, typeof(InvoiceProfile));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo {Title = "InvoiceService", Version = "v1"});
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+});
 
 var app = builder.Build();
 

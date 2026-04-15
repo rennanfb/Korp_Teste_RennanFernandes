@@ -1,6 +1,8 @@
 using BillingSystem.StockService.Data;
 using BillingSystem.StockService.Profiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +31,14 @@ builder.Services.AddDbContext<ProductDbContext>(opts => opts.UseSqlite(builder.C
 builder.Services.AddAutoMapper(cfg => { }, typeof(ProductProfile));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "StockService", Version = "v1" });
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+});
 
 var app = builder.Build();
 
