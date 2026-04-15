@@ -87,6 +87,7 @@ export class InvoiceFormComponent implements OnInit {
     error: (err) => {
       alert(err.error || 'Failed to create invoice');
       this.isLoading = false;
+      this.cdr.detectChanges();
     },
     complete: () => {
       this.isLoading = false;
