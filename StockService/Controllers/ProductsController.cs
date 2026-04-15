@@ -116,21 +116,18 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DecreaseStock(int id, DecreaseStockDto dto)
     {
-        // 1. Verifica se o produto existe
         var productExists = await _context.Products
             .AnyAsync(p => p.Id == id);
 
         if (!productExists)
             return NotFound("Product not found");
 
-        // 2. Update ATÔMICO (resolve concorrência)
         var rows = await _context.Database.ExecuteSqlRawAsync(@"
         UPDATE Products
         SET Stock = Stock - {0}
         WHERE Id = {1} AND Stock >= {0}
     ", dto.Quantity, id);
 
-        // 3. Se não atualizou, é estoque insuficiente
         if (rows == 0)
             return BadRequest("Insufficient stock");
 
