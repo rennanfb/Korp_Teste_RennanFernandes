@@ -1,248 +1,53 @@
-# Sistema de Notas Fiscais com Microsserviços
-
-## Visão Geral
-<p>
-Este projeto é composto por dois microsserviços independentes desenvolvidos com ASP.NET Core:
-</p>
-
-<ul>
-  <li><b>Serviço de Estoque</b>: responsável pelo gerenciamento de produtos e controle de estoque</li>
-  <li><b>Serviço de Faturamento</b>: responsável pela criação, atualização e validação de notas fiscais através do Serviço de Estoque</li>
-</ul>
-
-<p>
-O sistema demonstra comunicação entre microsserviços via HTTP, tratamento de concorrência, tolerância a falhas e integração com frontend em Angular.
-</p>
-
----
-
-## Arquitetura
-
-<pre>
+Invoice System with Microservices
+Overview
+<p> This project is composed of two independent microservices developed with ASP.NET Core: </p> <ul> <li><b>Stock Service</b>: responsible for product management and stock control</li> <li><b>Invoice Service</b>: responsible for the creation, updating and validation of invoices through the Stock Service</li> </ul> <p> The system demonstrates communication between microservices via HTTP, concurrency handling, fault tolerance and integration with an Angular frontend. </p>
+Architecture
+<pre> Frontend (Angular) ↓ Invoice Service ↓ (HTTP) Stock Service ↓ SQL Server </pre> <p> Each service is fully independent and communicates exclusively through REST APIs. There is no database sharing between the services. </p>
+Stock Service
+<p><b>Responsible for product and stock management.</b></p>
+Features
+<ul> <li>Create, update and delete products</li> <li>Retrieve product data</li> <li>Decrease stock with concurrency-safe logic</li> </ul>
+Endpoints
+<pre> GET /api/products/{id} POST /api/products PUT /api/products/{id} DELETE /api/products/{id} POST /api/products/{id}/decrease </pre>
+Invoice Service
+<p><b>Responsible for the invoice lifecycle and validations.</b></p>
+Features
+<ul> <li>Create invoices with multiple items</li> <li>Update invoice data</li> <li>Delete invoices</li> <li>Validate products via Stock Service</li> <li>Automatically generate invoice number</li> <li>Finalize (print) invoices with stock validation</li> <li>Handle Stock Service unavailability</li> </ul>
+Endpoints
+<pre> POST /api/invoices GET /api/invoices GET /api/invoices/{id} PUT /api/invoices/{id} DELETE /api/invoices/{id} POST /api/invoices/{id}/print GET /api/invoices/test-concurrency/{productId} </pre>
 Frontend (Angular)
-        ↓
-Serviço de Faturamento
-        ↓ (HTTP)
-Serviço de Estoque
-        ↓
-SQL Server
-</pre>
-
-<p>
-Cada serviço é totalmente independente e se comunica exclusivamente por meio de APIs REST. Não há compartilhamento de banco de dados entre os serviços.
-</p>
-
----
-
-## Serviço de Estoque
-
-<p><b>Responsável pelo gerenciamento de produtos e estoque.</b></p>
-
-### Funcionalidades
-<ul>
-  <li>Criar, atualizar e excluir produtos</li>
-  <li>Consultar dados de produtos</li>
-  <li>Reduzir estoque com lógica segura para concorrência</li>
-</ul>
-
-### Endpoints
-<pre>
-GET    /api/products/{id}
-POST   /api/products
-PUT    /api/products/{id}
-DELETE /api/products/{id}
-POST   /api/products/{id}/decrease
-</pre>
-
----
-
-## Serviço de Faturamento
-
-<p><b>Responsável pelo ciclo de vida das notas fiscais e validações.</b></p>
-
-### Funcionalidades
-<ul>
-  <li>Criar notas fiscais com múltiplos itens</li>
-  <li>Atualizar dados da nota fiscal</li>
-  <li>Excluir notas fiscais</li>
-  <li>Validar produtos via Serviço de Estoque</li>
-  <li>Gerar número da nota automaticamente</li>
-  <li>Finalizar (imprimir) notas com validação de estoque</li>
-  <li>Tratar indisponibilidade do Serviço de Estoque</li>
-</ul>
-
-### Endpoints
-<pre>
-POST   /api/invoices
-GET    /api/invoices
-GET    /api/invoices/{id}
-PUT    /api/invoices/{id}
-DELETE /api/invoices/{id}
-POST   /api/invoices/{id}/print
-GET    /api/invoices/test-concurrency/{productId}
-</pre>
-
----
-
-## Frontend (Angular)
-
-### Funcionalidades
-<ul>
-  <li>Criar produtos</li>
-  <li>Criar notas fiscais com múltiplos itens</li>
-  <li>Finalizar (imprimir) notas fiscais</li>
-  <li>Estados de carregamento para operações assíncronas (criação e impressão)</li>
-  <li>Feedback básico ao usuário e validações</li>
-</ul>
-
----
-
-## Comunicação entre Serviços
-
-<p>O Serviço de Faturamento se comunica com o Serviço de Estoque utilizando HttpClient.</p>
-
-<ul>
-  <li>Validação da existência de produtos</li>
-  <li>Recuperação de dados de produtos</li>
-  <li>Verificação e redução de estoque</li>
-</ul>
-
----
-
-## Tratamento de Concorrência
-
-<p>As atualizações de estoque são feitas utilizando operações atômicas no banco de dados para evitar condições de corrida (race conditions).</p>
-
-<ul>
-  <li>Evita valores negativos de estoque</li>
-  <li>Garante atualizações seguras em cenários concorrentes</li>
-  <li>Mantém consistência em requisições paralelas</li>
-</ul>
-
----
-
-## Tolerância a Falhas
-
-<p>Quando o Serviço de Estoque está indisponível:</p>
-
-<ul>
-  <li>O Serviço de Faturamento retorna HTTP 503 (Service Unavailable)</li>
-  <li>As operações de nota fiscal são bloqueadas para evitar inconsistência de dados</li>
-</ul>
-
----
-
-## Teste de Concorrência
-
-<pre>
-GET /api/invoices/test-concurrency/{productId}
-</pre>
-
-<p>
-Este endpoint simula múltiplas requisições simultâneas para validar o tratamento de concorrência no estoque.
-</p>
-
----
-
-## Observações sobre o Modelo de Dados
-
-<ul>
-  <li>Itens da nota fiscal armazenam ProductId, Quantity e ProductDescription</li>
-  <li>Os dados do produto são obtidos do Serviço de Estoque no momento da criação</li>
-  <li>Não há banco de dados compartilhado entre os microsserviços</li>
-</ul>
-
----
-
-## Fluxo de Funcionamento
-
-<ol>
-  <li>O usuário envia uma requisição de criação de nota fiscal pelo frontend</li>
-  <li>O Serviço de Faturamento valida os itens via Serviço de Estoque</li>
-  <li>Os dados do produto são obtidos e armazenados no item da nota</li>
-  <li>O estoque é reduzido de forma atômica ao finalizar a nota</li>
-  <li>A nota é persistida no SQL Server</li>
-  <li>A resposta é retornada ao cliente</li>
-</ol>
-
----
-
-## Tecnologias Utilizadas
-
-<ul>
-  <li>ASP.NET Core Web API</li>
-  <li>Entity Framework Core</li>
-  <li>SQL Server</li>
-  <li>AutoMapper</li>
-  <li>HttpClient</li>
-  <li>Angular</li>
-  <li>Swagger</li>
-</ul>
-
----
-
-## Detalhamento Técnico
-
-### Ciclo de Vida do Angular
-
-<p>
-O lifecycle hook <b>ngOnInit</b> foi utilizado para realizar o carregamento inicial dos dados quando os componentes são inicializados, como a busca de produtos e notas fiscais a partir das APIs.
-</p>
-
-### Uso de RxJS
-
-<p>
-O RxJS é utilizado de forma indireta através do HttpClient do Angular. Todas as requisições HTTP retornam Observables, que são consumidos utilizando <b>subscribe()</b> para tratar respostas e erros de forma assíncrona.
-</p>
-
-### Bibliotecas Utilizadas
-
-<ul>
-  <li><b>HttpClient (Angular)</b>: comunicação com as APIs do backend</li>
-  <li><b>ASP.NET Core Web API</b>: implementação dos serviços backend</li>
-  <li><b>Entity Framework Core</b>: acesso e persistência de dados no banco</li>
-  <li><b>AutoMapper</b>: mapeamento entre entidades e DTOs</li>
-  <li><b>Swagger</b>: documentação e testes dos endpoints da API</li>
-</ul>
-
-### Componentes Visuais
-
-<p>
-Nenhuma biblioteca externa de UI foi utilizada. O frontend foi construído com componentes padrão do Angular, HTML e CSS customizado.
-</p>
-
-### Gerenciamento de Dependências
-
-<p>
-As dependências do backend são gerenciadas via NuGet e definidas nos arquivos <b>.csproj</b> de cada microsserviço.
-</p>
-
-### Frameworks Utilizados no Backend
-
-<p>
-O backend foi desenvolvido utilizando ASP.NET Core Web API em conjunto com Entity Framework Core.
-</p>
-
-### Tratamento de Erros
-
-<p>
-O tratamento de erros é realizado utilizando blocos try/catch em operações críticas. Em falhas de comunicação com o Serviço de Estoque, exceções como <b>HttpRequestException</b> são tratadas e uma resposta <b>503 Service Unavailable</b> é retornada para evitar inconsistência de dados.
-</p>
-
-### Uso de LINQ
-
-<p>
-O LINQ é utilizado em conjunto com o Entity Framework Core para consultas ao banco de dados, incluindo métodos como <b>AnyAsync</b>, <b>FindAsync</b> e operações de filtragem para validação e recuperação de dados.
-</p>
-
----
-
-## Observações Finais
-
-<ul>
-  <li>Os microsserviços são totalmente independentes</li>
-  <li>A comunicação ocorre exclusivamente via HTTP</li>
-  <li>Não há banco de dados compartilhado entre os serviços</li>
-  <li>Os dados de produtos são obtidos via comunicação entre APIs</li>
-  <li>O frontend inclui melhorias básicas de experiência do usuário, como estados de carregamento</li>
-</ul>
+Features
+<ul> <li>Create products</li> <li>Create invoices with multiple items</li> <li>Finalize (print) invoices</li> <li>Loading states for asynchronous operations (creation and printing)</li> <li>Basic user feedback and validations</li> </ul>
+Communication Between Services
+<p>The Invoice Service communicates with the Stock Service using HttpClient.</p> <ul> <li>Validation of product existence</li> <li>Retrieval of product data</li> <li>Stock verification and reduction</li> </ul>
+Concurrency Handling
+<p>Stock updates are performed using atomic operations in the database to avoid race conditions.</p> <ul> <li>Prevents negative stock values</li> <li>Ensures safe updates in concurrent scenarios</li> <li>Maintains consistency in parallel requests</li> </ul>
+Fault Tolerance
+<p>When the Stock Service is unavailable:</p> <ul> <li>The Invoice Service returns HTTP 503 (Service Unavailable)</li> <li>Invoice operations are blocked to avoid data inconsistency</li> </ul>
+Concurrency Testing
+<pre> GET /api/invoices/test-concurrency/{productId} </pre> <p> This endpoint simulates multiple simultaneous requests to validate concurrency handling in stock. </p>
+Notes on the Data Model
+<ul> <li>Invoice items store ProductId, Quantity and ProductDescription</li> <li>Product data is obtained from the Stock Service at the moment of creation</li> <li>There is no shared database between the microservices</li> </ul>
+Workflow
+<ol> <li>The user sends a request to create an invoice through the frontend</li> <li>The Invoice Service validates the items via the Stock Service</li> <li>Product data is retrieved and stored in the invoice item</li> <li>Stock is reduced atomically when finalizing the invoice</li> <li>The invoice is persisted in SQL Server</li> <li>The response is returned to the client</li> </ol>
+Technologies Used
+<ul> <li>ASP.NET Core Web API</li> <li>Entity Framework Core</li> <li>SQL Server</li> <li>AutoMapper</li> <li>HttpClient</li> <li>Angular</li> <li>Swagger</li> </ul>
+Technical Details
+Angular Lifecycle
+<p> The lifecycle hook <b>ngOnInit</b> was used to perform the initial data loading when components are initialized, such as fetching products and invoices from the APIs. </p>
+RxJS Usage
+<p> RxJS is used indirectly through Angular's HttpClient. All HTTP requests return Observables, which are consumed using <b>subscribe()</b> to handle responses and errors asynchronously. </p>
+Libraries Used
+<ul> <li><b>HttpClient (Angular)</b>: communication with backend APIs</li> <li><b>ASP.NET Core Web API</b>: implementation of backend services</li> <li><b>Entity Framework Core</b>: data access and persistence in the database</li> <li><b>AutoMapper</b>: mapping between entities and DTOs</li> <li><b>Swagger</b>: documentation and testing of API endpoints</li> </ul>
+Visual Components
+<p> No external UI library was used. The frontend was built with standard Angular components, HTML and custom CSS. </p>
+Dependency Management
+<p> Backend dependencies are managed via NuGet and defined in the <b>.csproj</b> files of each microservice. </p>
+Frameworks Used in Backend
+<p> The backend was developed using ASP.NET Core Web API together with Entity Framework Core. </p>
+Error Handling
+<p> Error handling is performed using try/catch blocks in critical operations. In case of communication failures with the Stock Service, exceptions such as <b>HttpRequestException</b> are handled and a <b>503 Service Unavailable</b> response is returned to avoid data inconsistency. </p>
+LINQ Usage
+<p> LINQ is used together with Entity Framework Core for database queries, including methods such as <b>AnyAsync</b>, <b>FindAsync</b> and filtering operations for validation and data retrieval. </p>
+Final Notes
+<ul> <li>The microservices are fully independent</li> <li>Communication occurs exclusively via HTTP</li> <li>There is no shared database between the services</li> <li>Product data is obtained via communication between APIs</li> <li>The frontend includes basic user experience improvements, such as loading states</li> </ul>
